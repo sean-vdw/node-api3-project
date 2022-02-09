@@ -31,10 +31,12 @@ function validateUser(req, res, next) {
 };
 
 function validatePost(req, res, next) {
-  if (req.body) {
-    next();
+  const { text } = req.body;
+  if (!text) {
+    res.status(400).json({ message: "missing required text field"})
   } else {
-    next({ status: 400, message: "missing required text field"});
+    req.text = text;
+    next();
   }
 };
 

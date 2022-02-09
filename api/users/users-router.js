@@ -39,12 +39,14 @@ router.put('/:id', logger, validateUserId, validateUser, (req, res, next) => {
     .catch(next);
 });
 
-router.delete('/:id', logger, validateUserId, (req, res, next) => {
-  Users.remove(req.params.id)
-    .then(user => {
-      res.status(200).json(user);
-    })
-    .catch(next);
+router.delete('/:id', logger, validateUserId, async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    await Users.remove(id)
+    res.json(req.user);
+  } catch(err) {
+    next(err);
+  }
 });
 
 router.get('/:id/posts', logger, validateUserId, (req, res, next) => {
