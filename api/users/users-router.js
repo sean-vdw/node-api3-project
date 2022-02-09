@@ -57,12 +57,13 @@ router.get('/:id/posts', logger, validateUserId, (req, res, next) => {
     .catch(next);
 });
 
-router.post('/:id/posts', logger, validateUserId, validatePost, (req, res, next) => {
-  Posts.insert(req.body)
-    .then(post => {
-      res.status(201).json(post);
-    })
-    .catch(next);
+router.post('/:id/posts', logger, validateUserId, validatePost, async (req, res, next) => {
+  try {
+    const newPost = await Posts.insert({ user_id: req.params.id, text: req.text});
+    res.status(201).json(newPost);
+  } catch(err) {
+    next(err);
+  }
 });
 
 module.exports = router;
