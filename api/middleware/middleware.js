@@ -1,43 +1,43 @@
-const { getById } = require('../users/users-model');
+const User = require('../users/users-model');
 
 function logger(req, res, next) {
   console.log(`${new Date().toISOString()} : [${req.method}] at ${req.url}`);
   next();
 }
 
-function validateUserId(req, res, next) {
+async function validateUserId(req, res, next) {
   const { id } = req.params;
-  getById(id)
-    .then(user => {
-      if (user) {
-        req.user = user;
-        next();
-      } else {
-        next ({ status: 404, message: "user not found" })
-      }
-    })
-    .catch(next);
+  try {
+    const user = await User.getById(id);
+    if (!user) {
+      res.status(404).json({ message: "user not found" })
+    } else {
+      req.user = user;
+      next();
+    }
+  } catch(err) {
+    res.status(500).json({ message: "we're having problems finding the user"})
+  }
 };
 
 function validateUser(req, res, next) {
-  if (req.body.name) {
-    req.body.name = req.body.name.trim();
-    next();
+  const { name } = req.body;
+  if (!name) {
+    res.status(400).json({ message: "missing required name field" })
   } else {
-    next({ status: 400, message: "missing required name field"});
+    req.name = name;
+    next();
   }
 };
 
 function validatePost(req, res, next) {
-  if (req.body.text) {
-    req.body.text = req.body.text.trim();
+  if (req.body) {
     next();
   } else {
     next({ status: 400, message: "missing required text field"});
   }
 };
 
-// do not forget to expose these functions to other modules
 module.exports = {
   logger,
   validateUserId,
