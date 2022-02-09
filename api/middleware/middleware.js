@@ -17,15 +17,25 @@ function validateUserId(req, res, next) {
       }
     })
     .catch(next);
-}
+};
 
 function validateUser(req, res, next) {
-  // DO YOUR MAGIC
-}
+  if (req.body.name) {
+    req.body.name = req.body.name.trim();
+    next();
+  } else {
+    next({ status: 400, message: "missing required name field"});
+  }
+};
 
 function validatePost(req, res, next) {
-  // DO YOUR MAGIC
-}
+  if (req.body.text) {
+    req.body.text = req.body.text.trim();
+    next();
+  } else {
+    next({ status: 400, message: "missing required text field"});
+  }
+};
 
 // do not forget to expose these functions to other modules
 module.exports = {
