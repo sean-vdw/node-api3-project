@@ -1,10 +1,22 @@
+const { getById } = require('../users/users-model');
+
 function logger(req, res, next) {
   console.log(`${new Date().toISOString()} : [${req.method}] at ${req.url}`);
   next();
 }
 
 function validateUserId(req, res, next) {
-  // DO YOUR MAGIC
+  const { id } = req.params;
+  getById(id)
+    .then(user => {
+      if (user) {
+        req.user = user;
+        next();
+      } else {
+        next ({ status: 404, message: "user not found" })
+      }
+    })
+    .catch(next);
 }
 
 function validateUser(req, res, next) {
